@@ -20,6 +20,20 @@ public class GlobalExceptionHandler {
                 .body("Access Denied: You do not have permission to perform this action");
     }
 
+    @ExceptionHandler(CompanyAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleCompanyAlreadyExists(CompanyAlreadyExistsException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(CompanyNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCompanyNotFound(CompanyNotFoundException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleUserAlreadyExists(UserAlreadyExistsException ex){
         Map<String, String> response = new HashMap<>();

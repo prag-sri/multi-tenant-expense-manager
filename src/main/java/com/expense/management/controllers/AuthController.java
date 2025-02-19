@@ -27,8 +27,9 @@ public class AuthController {
         String username = (String) request.get("username");
         String password = (String) request.get("password");
         List<String> roles = (List<String>) request.get("roles");
+        String company = (String) request.get("company");
 
-        String token = authService.registerUser(username, password, roles);
+        String token = authService.registerUser(username, password, roles, company);
 
         // Create response
         Map<String, String> response = new HashMap<>();

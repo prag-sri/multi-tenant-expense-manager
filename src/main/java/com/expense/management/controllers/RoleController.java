@@ -3,6 +3,7 @@ package com.expense.management.controllers;
 import com.expense.management.models.Role;
 import com.expense.management.services.RoleService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class RoleController {
     @PostMapping
     public ResponseEntity<String> createRole(@Valid @RequestBody Role role){
         roleService.createRole(role);
-        return ResponseEntity.ok("Role created successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Role created successfully!");
     }
 
     @GetMapping

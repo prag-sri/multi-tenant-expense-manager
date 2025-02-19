@@ -37,6 +37,10 @@ public class User implements UserDetails {
     inverseJoinColumns= @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
