@@ -1,24 +1,36 @@
 package com.expense.management.services;
 
+import com.expense.management.exceptions.CategoryNotFoundException;
 import com.expense.management.exceptions.ExpenseNotFoundException;
+import com.expense.management.models.Category;
 import com.expense.management.models.Expense;
+import com.expense.management.repositories.CategoryRepository;
 import com.expense.management.repositories.ExpenseRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
+    private final CategoryRepository categoryRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository){
+    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository){
         this.expenseRepository= expenseRepository;
+        this.categoryRepository= categoryRepository;
     }
 
     public Expense createExpense(Expense expense){
+        Long categoryId = expense.getCategory().getId();
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found!"));
+
+        expense.setCategory(category);
         return expenseRepository.save(expense);
     }
 

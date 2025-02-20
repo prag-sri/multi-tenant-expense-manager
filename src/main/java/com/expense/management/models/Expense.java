@@ -37,6 +37,10 @@ public class Expense {
     private LocalDateTime date;
 
     @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @ManyToOne
     @JoinColumn(name= "user_id", nullable = false)
     private User user;
 
