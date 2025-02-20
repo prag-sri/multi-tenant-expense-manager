@@ -36,6 +36,14 @@ public class Expense {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    @ManyToOne
+    @JoinColumn(name= "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name= "company_id", nullable = false)
+    private Company company;
+
     @PrePersist
     protected void onCreate(){
         if(date==null){
