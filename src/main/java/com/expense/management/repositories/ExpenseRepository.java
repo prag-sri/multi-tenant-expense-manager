@@ -2,6 +2,7 @@ package com.expense.management.repositories;
 
 import com.expense.management.models.Expense;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -15,4 +16,8 @@ public interface ExpenseRepository extends JpaRepository<Expense,Long> {
     List<Expense> findByCompanyId(Long companyId);
     List<Expense> findByUserIdAndCompanyId(Long userId, Long companyId);
     List<Expense> findByDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Expense> findByCompanyIdAndDateBetween(Long companyId, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT e FROM Expense e WHERE e.company.id = :companyId ORDER BY e.amount DESC LIMIT :limit")
+    List<Expense> findByCompanyIdOrderByAmountDesc(Long companyId, int limit);
 }
