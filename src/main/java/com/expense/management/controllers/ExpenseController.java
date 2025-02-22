@@ -65,4 +65,31 @@ public class ExpenseController {
     public void deleteExpense(@PathVariable Long id){
         expenseService.deleteExpense(id);
     }
+
+    @PatchMapping("/{id}/mark-paid")
+    public ResponseEntity<String> markExpenseAsPaid(@PathVariable Long id){
+        expenseService.markAsPaid(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Expense paid successfully!");
+    }
+
+    @PatchMapping("/{id}/update-due-date")
+    public ResponseEntity<String> updateDueDate(@PathVariable Long id, @RequestBody LocalDateTime newDueDate){
+        expenseService.updateDueDate(id,newDueDate);
+        return ResponseEntity.status(HttpStatus.OK).body("Expense Due Date updated successfully!");
+    }
+
+    @GetMapping("/paid")
+    public ResponseEntity<List<Expense>> getPaidExpenses(){
+        return ResponseEntity.ok(expenseService.getPaidExpenses());
+    }
+
+    @GetMapping("/overdue")
+    public ResponseEntity<List<Expense>> getUnpaidDueExpensesForToday(){
+        return ResponseEntity.ok(expenseService.getUnpaidDueExpensesForToday());
+    }
+
+    @GetMapping("/overdue/all")
+    public ResponseEntity<List<Expense>> getAllOverallUnpaidDueExpenses(){
+        return ResponseEntity.ok(expenseService.getAllOverallUnpaidDueExpenses());
+    }
 }

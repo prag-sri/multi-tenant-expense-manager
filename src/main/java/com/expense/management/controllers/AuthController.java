@@ -26,10 +26,11 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> register(@RequestBody Map<String,Object> request) {
         String username = (String) request.get("username");
         String password = (String) request.get("password");
+        String email = (String) request.get("email");
         List<String> roles = (List<String>) request.get("roles");
         String company = (String) request.get("company");
 
-        String token = authService.registerUser(username, password, roles, company);
+        String token = authService.registerUser(username, password, email, roles, company);
 
         // Create response
         Map<String, String> response = new HashMap<>();

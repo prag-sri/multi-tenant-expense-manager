@@ -36,6 +36,12 @@ public class Expense {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    @Column(nullable = false)
+    private LocalDateTime dueDate;
+
+    @Column(nullable = false)
+    private boolean paid = false;
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -52,6 +58,9 @@ public class Expense {
     protected void onCreate(){
         if(date==null){
             date= LocalDateTime.now();
+        }
+        if (dueDate == null) {
+            dueDate = date.plusDays(7);  // Default due date = 7 days after creation
         }
     }
 }

@@ -9,9 +9,10 @@ import com.expense.management.repositories.ExpenseRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ExpenseService {
@@ -65,6 +66,8 @@ public class ExpenseService {
             expense.setDescription(updatedExpense.getDescription());
             expense.setAmount(updatedExpense.getAmount());
             expense.setDate(updatedExpense.getDate());
+            expense.setPaid(updatedExpense.isPaid());
+            expense.setDueDate(updatedExpense.getDueDate());
             return expenseRepository.save(expense);
         }).orElseThrow(() -> new RuntimeException("Expense not found!"));
     }
@@ -75,5 +78,42 @@ public class ExpenseService {
             throw new ExpenseNotFoundException("Expense with ID "+id+" not found");
         }
         expenseRepository.deleteById(id);
+    }
+
+    public List<Expense> getUnpaidDueExpensesForToday(){
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        return expenseRepository.findUnpaidDueExpensesForToday(startOfDay,endOfDay);
+    }
+
+    public List<Expense> getAllOverallUnpaidDueExpenses(){
+        LocalDateTime today = LocalDateTime.now();
+        return expenseRepository.findAllOverallUnpaidDueExpenses(today);
+    }
+
+    public void markAsPaid(Long id){
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID "+id+" not found"));
+        expense.setPaid(true);
+        expenseRepository.save(expense);
+    }
+
+    public void updateDueDate(Long id, LocalDateTime newDueDate){
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID "+id+" not found"));
+        expense.setDueDate(newDueDate);
+
+        // Update 'paid' as false if its due date falls after today
+        if(newDueDate.isBefore(LocalDateTime.now())){
+            expense.setPaid(false);
+        }
+
+        expenseRepository.save(expense);
+    }
+
+    public List<Expense> getPaidExpenses() {
+        return expenseRepository.findPaidExpenses();
     }
 }

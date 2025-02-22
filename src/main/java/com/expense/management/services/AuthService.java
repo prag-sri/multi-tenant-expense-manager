@@ -38,7 +38,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String registerUser(String username, String password, List<String> roleNames, String companyName){
+    public String registerUser(String username, String password, String email, List<String> roleNames, String companyName){
         Optional<Company> company = companyRepository.findByName(companyName);
         if(company.isEmpty()){
             throw new CompanyNotFoundException("Company not found!");
@@ -51,6 +51,7 @@ public class AuthService {
         User user= new User();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
+        user.setEmail(email);
         user.setCompany(company.get());
 
         Set<Role> roles= roleNames.stream()
