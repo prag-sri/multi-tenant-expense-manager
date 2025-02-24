@@ -31,3 +31,18 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore build files
+target/
+node_modules/
+
+# Ignore environment variables & secrets
+.env
+*.env
+secrets.yaml
+
+# Ignore local Kubernetes configs
+k8s/*.local.yaml
+
+# Ignore Docker build cache
+*.tar

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: expense-app
+  template:
+    metadata:
+      labels:
+        app: expense-app
+    spec:
+      containers:
+        - name: expense-app
+          image: expense-management-expense-app:latest
+          imagePullPolicy: Never  # Ensures Kubernetes doesn't try to pull from Docker Hub
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://expense-db:5432/expense_management
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_REDIS_HOST
+              value: expense-redis
+            - name: SPRING_RABBITMQ_HOST
+              value: expense-rabbitmq
