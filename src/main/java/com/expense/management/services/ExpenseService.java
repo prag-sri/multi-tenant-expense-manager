@@ -7,11 +7,14 @@ import com.expense.management.models.Expense;
 import com.expense.management.repositories.CategoryRepository;
 import com.expense.management.repositories.ExpenseRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +28,7 @@ public class ExpenseService {
         this.categoryRepository= categoryRepository;
     }
 
+    @CacheEvict(value = {"expenses", "expense", "unpaidExpenses"}, allEntries = true)
     public Expense createExpense(Expense expense){
         Long categoryId = expense.getCategory().getId();
 
@@ -39,15 +43,19 @@ public class ExpenseService {
         return expenseRepository.findAll();
     }
 
+    @Cacheable(value = "expenses", key = "#id")
     public Expense getExpenseById(Long id){
         return expenseRepository.findById(id)
                 .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID "+id+" not found"));
     }
 
+    @Cacheable(value = "expenses", key = "#userId")
     public List<Expense> getExpensesByUser(Long userId){
+        System.out.println("Fetching from database for ID: " + userId);
         return expenseRepository.findByUserId(userId);
     }
 
+    @Cacheable(value = "expenses", key = "#companyId")
     public List<Expense> getExpensesByCompany(Long companyId){
         return expenseRepository.findByCompanyId(companyId);
     }
@@ -60,6 +68,7 @@ public class ExpenseService {
         return expenseRepository.findByDateBetween(startDate, endDate);
     }
 
+    @CacheEvict(value = {"expenses", "expense", "unpaidExpenses"}, key = "#id")
     public Expense updateExpense(Long id, Expense updatedExpense){
         return expenseRepository.findById(id).map(expense -> {
             expense.setTitle(updatedExpense.getTitle());
@@ -72,6 +81,7 @@ public class ExpenseService {
         }).orElseThrow(() -> new RuntimeException("Expense not found!"));
     }
 
+    @CacheEvict(value = {"expenses", "expense", "unpaidExpenses"}, key = "#id")
     @Transactional
     public void deleteExpense(Long id){
         if(!expenseRepository.existsById(id)){
@@ -80,6 +90,7 @@ public class ExpenseService {
         expenseRepository.deleteById(id);
     }
 
+    @Cacheable(value = "unpaidExpenses", key = "'today'")
     public List<Expense> getUnpaidDueExpensesForToday(){
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
@@ -93,6 +104,7 @@ public class ExpenseService {
         return expenseRepository.findAllOverallUnpaidDueExpenses(today);
     }
 
+    @CacheEvict(value = {"expenses", "expense", "unpaidExpenses"}, key = "#id")
     public void markAsPaid(Long id){
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID "+id+" not found"));
@@ -100,6 +112,7 @@ public class ExpenseService {
         expenseRepository.save(expense);
     }
 
+    @CacheEvict(value = {"expenses", "expense", "unpaidExpenses"}, key = "#id")
     public void updateDueDate(Long id, LocalDateTime newDueDate){
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID "+id+" not found"));

@@ -1,5 +1,6 @@
 package com.expense.management.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,6 +11,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "expenses")
@@ -17,7 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Expense {
+public class Expense implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +48,7 @@ public class Expense {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name= "user_id", nullable = false)
     private User user;
@@ -53,6 +56,16 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name= "company_id", nullable = false)
     private Company company;
+
+    public Expense(long id, String testTitle, String testDescription, BigDecimal testAmount, LocalDateTime testDate, LocalDateTime testDueDate, boolean testPaid) {
+        this.id = id;
+        this.title = testTitle;
+        this.description = testDescription;
+        this.amount = testAmount;
+        this.date = testDate;
+        this.dueDate = testDueDate;
+        this.paid = testPaid;
+    }
 
     @PrePersist
     protected void onCreate(){
