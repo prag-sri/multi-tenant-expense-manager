@@ -3,6 +3,7 @@ package com.expense.management.services;
 import com.expense.management.exceptions.CompanyAlreadyExistsException;
 import com.expense.management.models.Company;
 import com.expense.management.repositories.CompanyRepository;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,8 +1,6 @@
 package com.expense.management.controllers;
 
-import com.expense.management.exceptions.CompanyAlreadyExistsException;
 import com.expense.management.models.Company;
-import com.expense.management.models.Role;
 import com.expense.management.services.CompanyService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
