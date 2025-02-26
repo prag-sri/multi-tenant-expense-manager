@@ -14,6 +14,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: expense_management
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -23,6 +49,19 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Set Environment Variables
+        run: |
+          echo "SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/expense_management" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=postgres" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=postgres" >> $GITHUB_ENV
+          echo "SPRING_REDIS_HOST=localhost" >> $GITHUB_ENV
+          echo "SPRING_RABBITMQ_HOST=localhost" >> $GITHUB_ENV
+
+          # Only these are secrets
+          echo "SPRING_MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> $GITHUB_ENV
+          echo "SPRING_MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> $GITHUB_ENV
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
 
       - name: Build & Test
         run: |
